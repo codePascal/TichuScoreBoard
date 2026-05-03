@@ -1,0 +1,84 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Expo: Start",
+      "type": "shell",
+      "command": "npx expo start --clear",
+      "group": { "kind": "build", "isDefault": true },
+      "presentation": { "reveal": "always", "panel": "dedicated" },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Expo: Start (Android)",
+      "type": "shell",
+      "command": "npx expo start --android --clear",
+      "presentation": { "reveal": "always", "panel": "dedicated" },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Expo: Start (iOS)",
+      "type": "shell",
+      "command": "npx expo start --ios --clear",
+      "presentation": { "reveal": "always", "panel": "dedicated" },
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Jest: Run All Tests",
+      "type": "shell",
+      "command": "npm test",
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Jest: Watch",
+      "type": "shell",
+      "command": "npm run test:watch",
+      "group": "test",
+      "isBackground": true,
+      "presentation": { "reveal": "always", "panel": "dedicated" },
+      "problemMatcher": []
+    },
+    {
+      "label": "TypeScript: Check",
+      "type": "shell",
+      "command": "npx tsc --noEmit",
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": "$tsc"
+    },
+    {
+      "label": "ESLint: Run",
+      "type": "shell",
+      "command": "npm run lint",
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": "$eslint-stylish"
+    },
+    {
+      "label": "EAS: Build Android (preview)",
+      "type": "shell",
+      "command": "eas build --platform android --profile preview",
+      "presentation": { "reveal": "always", "panel": "dedicated" },
+      "problemMatcher": []
+    },
+    {
+      "label": "EAS: Build iOS (preview)",
+      "type": "shell",
+      "command": "eas build --platform ios --profile preview",
+      "presentation": { "reveal": "always", "panel": "dedicated" },
+      "problemMatcher": []
+    },
+    {
+      "label": "EAS: Build All (production)",
+      "type": "shell",
+      "command": "eas build --platform all --profile production",
+      "presentation": { "reveal": "always", "panel": "dedicated" },
+      "problemMatcher": []
+    }
+  ]
+}

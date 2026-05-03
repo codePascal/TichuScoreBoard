@@ -1,0 +1,67 @@
+{
+  // --- Editor ---
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.tabSize": 2,
+  "editor.rulers": [100],
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": "active",
+  "editor.inlayHints.enabled": "on",
+
+  // --- TypeScript ---
+  "js/ts.preferences.importModuleSpecifier": "relative",
+  "js/ts.suggest.autoImports": true,
+  "js/ts.updateImportsOnFileMove.enabled": "always",
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  // --- ESLint ---
+  "eslint.validate": ["javascript", "typescript", "typescriptreact"],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  // --- Files ---
+  "files.exclude": {
+    "node_modules": true,
+    ".expo": true,
+    "dist": true,
+    "android": true,
+    "ios": true
+  },
+  "search.exclude": {
+    "node_modules": true,
+    ".expo": true,
+    "dist": true,
+    "android": true,
+    "ios": true
+  },
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/.expo/**": true
+  },
+
+  // --- React Native ---
+  "reactNative.packager.port": 8081,
+
+  // --- Error Lens ---
+  "errorLens.enabledDiagnosticLevels": ["error", "warning"],
+
+  // --- Spell checker ---
+  "cSpell.words": [
+    "colorscheme",
+    "expo",
+    "haptics",
+    "nativewind",
+    "rnc",
+    "sqlite",
+    "tichu",
+    "tichuscoreboard",
+    "tintcolor",
+    "upsert"
+  ]
+}

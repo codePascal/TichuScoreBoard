@@ -1,0 +1,20 @@
+{
+  "recommendations": [
+    // React Native / Expo
+    "msjsdiag.vscode-react-native",
+    "expo.vscode-expo-tools",
+
+    // TypeScript & language
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+
+    // Editor quality-of-life
+    "EditorConfig.EditorConfig",
+    "streetsidesoftware.code-spell-checker",
+    "usernamehw.errorlens",
+    "christian-kohler.path-intellisense",
+
+    // Git
+    "eamodio.gitlens"
+  ]
+}
