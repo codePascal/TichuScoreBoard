@@ -3,8 +3,9 @@ import type { TichuEvent, CompletedRound, Team } from '../types';
 /**
  * Compute total points earned by a team in one round.
  *
- * @remarks Function is not responsible to verify validity of tichu events nor it is responsible to
- *          verify validity of total points.
+ * @remarks
+ * Function is not responsible to verify validity of tichu events nor it is responsible to verify
+ * validity of total points.
  *
  * @param round The snapshot of this round.
  * @param team  Which team's score to compute.
