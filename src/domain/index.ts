@@ -4,4 +4,3 @@
 export * from './game';
 export * from './player';
 export * from './scoring';
-export * from './start';
