@@ -43,3 +43,14 @@ export function playerGrandTichuRate(p: Player): number {
 export function playerAvgScore(p: Player): number {
   return p.gamesPlayed === 0 ? 0 : p.totalScore / p.gamesPlayed;
 }
+
+/**
+ * Builds the normalized name of a player.
+ *
+ * @param displayName The display name of the player.
+ *
+ * @returns The normalized, lowercase, trimmed name.
+ */
+export function normalizedName(displayName: string): string {
+  return displayName.toLowerCase().trim();
+}

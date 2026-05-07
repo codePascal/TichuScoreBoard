@@ -53,13 +53,13 @@ export type Team = 'A' | 'B';
 /**
  * Represents a single Tichu or grand Tichu call made during a round.
  *
- * @param playerName Name of the player calling the Tichu.
- * @param isGrand    If the player announced a grand Tichu.
- * @param won        If the Tichu or grand Tichu was successful.
- * @param team       Which team the player belongs to.
+ * @param playerId The database ID of the player calling the Tichu.
+ * @param isGrand  If the player announced a grand Tichu.
+ * @param won      If the Tichu or grand Tichu was successful.
+ * @param team     Which team the player belongs to.
  */
 export interface TichuEvent {
-  playerName: string;
+  playerId: number;
   isGrand: boolean;
   won: boolean;
   team: Team;

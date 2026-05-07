@@ -7,7 +7,7 @@ const ANY_TEAM_POINTS_A = 30;
 const ANY_TEAM_POINTS_B = 70;
 const ANY_IS_DOUBLE_VICTORY = false;
 const ANY_DOUBLE_VICTORY_TEAM = 'A';
-const ANY_PLAYER_NAME = 'Anna';
+const ANY_PLAYER_ID = 0;
 
 function makeRound(overrides: Partial<CompletedRound> = {}): CompletedRound {
   return {
@@ -68,7 +68,7 @@ describe('computeRoundTeamTotal: double victories, no special Tichu events', () 
 describe('computeRoundTeamTotal: single Tichu and grand Tichu events', () => {
   it('team A made a Tichu', () => {
     const round = makeRound({
-      tichuEvents: [{ playerName: ANY_PLAYER_NAME, isGrand: false, won: true, team: 'A' }],
+      tichuEvents: [{ playerId: ANY_PLAYER_ID, isGrand: false, won: true, team: 'A' }],
     });
     expect(computeRoundTeamTotal(round, 'A')).toBe(130);
     expect(computeRoundTeamTotal(round, 'B')).toBe(70);
@@ -76,7 +76,7 @@ describe('computeRoundTeamTotal: single Tichu and grand Tichu events', () => {
 
   it('team A failed a Tichu', () => {
     const round = makeRound({
-      tichuEvents: [{ playerName: ANY_PLAYER_NAME, isGrand: false, won: false, team: 'A' }],
+      tichuEvents: [{ playerId: ANY_PLAYER_ID, isGrand: false, won: false, team: 'A' }],
     });
     expect(computeRoundTeamTotal(round, 'A')).toBe(-70);
     expect(computeRoundTeamTotal(round, 'B')).toBe(70);
@@ -84,7 +84,7 @@ describe('computeRoundTeamTotal: single Tichu and grand Tichu events', () => {
 
   it('team B made a grand Tichu', () => {
     const round = makeRound({
-      tichuEvents: [{ playerName: ANY_PLAYER_NAME, isGrand: true, won: true, team: 'B' }],
+      tichuEvents: [{ playerId: ANY_PLAYER_ID, isGrand: true, won: true, team: 'B' }],
     });
     expect(computeRoundTeamTotal(round, 'A')).toBe(30);
     expect(computeRoundTeamTotal(round, 'B')).toBe(270);
@@ -92,7 +92,7 @@ describe('computeRoundTeamTotal: single Tichu and grand Tichu events', () => {
 
   it('team B failed a grand Tichu', () => {
     const round = makeRound({
-      tichuEvents: [{ playerName: ANY_PLAYER_NAME, isGrand: true, won: false, team: 'B' }],
+      tichuEvents: [{ playerId: ANY_PLAYER_ID, isGrand: true, won: false, team: 'B' }],
     });
     expect(computeRoundTeamTotal(round, 'A')).toBe(30);
     expect(computeRoundTeamTotal(round, 'B')).toBe(-130);
@@ -102,7 +102,7 @@ describe('computeRoundTeamTotal: single Tichu and grand Tichu events', () => {
     const round = makeRound({
       isDoubleVictory: true,
       doubleVictoryTeam: 'A',
-      tichuEvents: [{ playerName: ANY_PLAYER_NAME, isGrand: false, won: false, team: 'B' }],
+      tichuEvents: [{ playerId: ANY_PLAYER_ID, isGrand: false, won: false, team: 'B' }],
     });
     expect(computeRoundTeamTotal(round, 'A')).toBe(200);
     expect(computeRoundTeamTotal(round, 'B')).toBe(-100);
@@ -114,8 +114,8 @@ describe('computeRoundTeamTotal: stacked Tichu and grand Tichu events', () => {
   it('both teams made Tichu calls but only team A succeeded', () => {
     const round = makeRound({
       tichuEvents: [
-        { playerName: ANY_PLAYER_NAME, isGrand: false, won: true, team: 'A' },
-        { playerName: ANY_PLAYER_NAME, isGrand: false, won: false, team: 'B' },
+        { playerId: ANY_PLAYER_ID, isGrand: false, won: true, team: 'A' },
+        { playerId: ANY_PLAYER_ID, isGrand: false, won: false, team: 'B' },
       ],
     });
     expect(computeRoundTeamTotal(round, 'A')).toBe(130);
@@ -125,8 +125,8 @@ describe('computeRoundTeamTotal: stacked Tichu and grand Tichu events', () => {
   it('both players from team A accidentally made Tichu calls and failed heroically', () => {
     const round = makeRound({
       tichuEvents: [
-        { playerName: ANY_PLAYER_NAME, isGrand: false, won: false, team: 'A' },
-        { playerName: ANY_PLAYER_NAME, isGrand: false, won: false, team: 'A' },
+        { playerId: ANY_PLAYER_ID, isGrand: false, won: false, team: 'A' },
+        { playerId: ANY_PLAYER_ID, isGrand: false, won: false, team: 'A' },
       ],
     });
     expect(computeRoundTeamTotal(round, 'A')).toBe(-170);

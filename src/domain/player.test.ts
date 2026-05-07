@@ -1,4 +1,10 @@
-import { playerWinRate, playerTichuRate, playerGrandTichuRate, playerAvgScore } from './player';
+import {
+  playerWinRate,
+  playerTichuRate,
+  playerGrandTichuRate,
+  playerAvgScore,
+  normalizedName,
+} from './player';
 import type { Player } from '../types';
 
 // Player test fixtures.
@@ -79,5 +85,32 @@ describe('playerAvgScore', () => {
 
   it('an unbeaten player', () => {
     expect(playerAvgScore(makePlayer({ gamesPlayed: 10, totalScore: 10000 }))).toBeCloseTo(1000);
+  });
+});
+
+// normalizedName
+describe('normalizedName', () => {
+  it('lowercases the name', () => {
+    expect(normalizedName('ANNA')).toBe('anna');
+  });
+
+  it('trims leading and trailing whitespace', () => {
+    expect(normalizedName('  anna  ')).toBe('anna');
+  });
+
+  it('lowercases and trims together', () => {
+    expect(normalizedName('  Bob  ')).toBe('bob');
+  });
+
+  it('leaves an already-normalized name unchanged', () => {
+    expect(normalizedName('carol')).toBe('carol');
+  });
+
+  it('handles an empty string', () => {
+    expect(normalizedName('')).toBe('');
+  });
+
+  it('handles multiple names', () => {
+    expect(normalizedName(' Anna Bob Carol')).toBe('anna bob carol');
   });
 });

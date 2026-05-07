@@ -1,6 +1,6 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
 import type { CompletedRound, Player, Team } from '../../types';
-import { aggregateTichuStats } from '../../domain';
+import { aggregateTichuStats, normalizedName } from '../../domain';
 
 /**
  * Fetches all players ordered alphabetically.
@@ -33,68 +33,96 @@ export async function getPlayerById(db: SQLiteDatabase, id: number): Promise<Pla
 }
 
 /**
- * Writes game result to the database.
+ * Returns an existing player by display name, or inserts a new one with zeroed stats.
  *
- * @param db           The player SQLite database.
- * @param teamAPlayers The player names in team A.
- * @param teamBPlayers The player names in team B.
- * @param teamAScore   The total score of team A.
- * @param teamBScore   The total score of team B.
+ * @remarks
+ * Matching is case-insensitive and trims whitespace. If two names normalize to the
+ * same value (e.g. "Anna" and "anna") they resolve to the same player record.
+ *
+ * @param db          The SQLite database.
+ * @param displayName The name as entered by the user.
+ *
+ * @returns The persisted player, with a valid database ID.
+ */
+export async function findOrCreatePlayer(db: SQLiteDatabase, displayName: string): Promise<Player> {
+  const normalized = normalizedName(displayName);
+
+  await db.runAsync(
+    `INSERT OR IGNORE INTO players
+       (display_name, normalized_name, games_played, games_won,
+        tichu_calls, tichu_wins, grand_tichu_calls, grand_tichu_wins, total_score)
+     VALUES (?, ?, 0, 0, 0, 0, 0, 0, 0)`,
+    [displayName, normalized]
+  );
+
+  const row = await db.getFirstAsync<Record<string, number | string>>(
+    'SELECT * FROM players WHERE normalized_name = ?',
+    [normalized]
+  );
+
+  // Row is guaranteed to exist: either just inserted or already present.
+  return _rowToPlayer(row!);
+}
+
+/**
+ * Writes the result of a finished game to each player's stats record.
+ *
+ * @description Uses a single transaction so either all four rows are updated or none are.
+ *
+ * @param db           The SQLite database.
+ * @param teamAPlayers The resolved Player objects for team A.
+ * @param teamBPlayers The resolved Player objects for team B.
+ * @param teamAScore   The final score of team A.
+ * @param teamBScore   The final score of team B.
  * @param winner       The winning team.
- * @param rounds       The completed rounds during the game with detailed information.
+ * @param rounds       The completed rounds, used to tally tichu stats per player.
  */
 export async function saveGameResult(
   db: SQLiteDatabase,
-  teamAPlayers: [string, string],
-  teamBPlayers: [string, string],
+  teamAPlayers: [Player, Player],
+  teamBPlayers: [Player, Player],
   teamAScore: number,
   teamBScore: number,
   winner: Team,
   rounds: CompletedRound[]
 ): Promise<void> {
   await db.withTransactionAsync(async () => {
-    for (const name of teamAPlayers) {
-      await _upsertPlayer(db, name, winner === 'A', teamAScore, rounds);
+    for (const player of teamAPlayers) {
+      await _updatePlayerStats(db, player, winner === 'A', teamAScore, rounds);
     }
-    for (const name of teamBPlayers) {
-      await _upsertPlayer(db, name, winner === 'B', teamBScore, rounds);
+    for (const player of teamBPlayers) {
+      await _updatePlayerStats(db, player, winner === 'B', teamBScore, rounds);
     }
   });
 }
 
-async function _upsertPlayer(
+async function _updatePlayerStats(
   db: SQLiteDatabase,
-  displayName: string,
+  player: Player,
   won: boolean,
   score: number,
   rounds: CompletedRound[]
 ): Promise<void> {
-  const normalized = displayName.toLowerCase().trim();
-  const stats = aggregateTichuStats(displayName, rounds);
+  const stats = aggregateTichuStats(player.id, rounds);
 
   await db.runAsync(
-    `INSERT INTO players
-       (display_name, normalized_name, games_played, games_won,
-        tichu_calls, tichu_wins, grand_tichu_calls, grand_tichu_wins, total_score)
-     VALUES (?, ?, 1, ?, ?, ?, ?, ?, ?)
-     ON CONFLICT(normalized_name) DO UPDATE SET
-       display_name      = excluded.display_name,
+    `UPDATE players SET
        games_played      = games_played + 1,
-       games_won         = games_won + excluded.games_won,
-       tichu_calls       = tichu_calls + excluded.tichu_calls,
-       tichu_wins        = tichu_wins + excluded.tichu_wins,
-       grand_tichu_calls = grand_tichu_calls + excluded.grand_tichu_calls,
-       grand_tichu_wins  = grand_tichu_wins + excluded.grand_tichu_wins,
-       total_score       = total_score + excluded.total_score`,
+       games_won         = games_won + ?,
+       tichu_calls       = tichu_calls + ?,
+       tichu_wins        = tichu_wins + ?,
+       grand_tichu_calls = grand_tichu_calls + ?,
+       grand_tichu_wins  = grand_tichu_wins + ?,
+       total_score       = total_score + ?
+     WHERE id = ?`,
     [
-      displayName,
-      normalized,
       won ? 1 : 0,
       stats.tichuCalls,
       stats.tichuWins,
       stats.grandCalls,
       stats.grandWins,
       score,
+      player.id,
     ]
   );
 }
