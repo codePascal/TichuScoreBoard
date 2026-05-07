@@ -60,6 +60,21 @@
       "problemMatcher": "$eslint-stylish"
     },
     {
+      "label": "Storybook: Start",
+      "type": "shell",
+      "command": "npm run storybook",
+      "isBackground": true,
+      "presentation": { "reveal": "always", "panel": "dedicated" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Storybook: Build",
+      "type": "shell",
+      "command": "npm run build-storybook",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+    {
       "label": "EAS: Build Android (preview)",
       "type": "shell",
       "command": "eas build --platform android --profile preview",
