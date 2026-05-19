@@ -28,6 +28,7 @@ export default function RootLayout() {
           options={{
             headerShown: true,
             title: 'Player Stats',
+            headerBackTitle: 'Leaderboard',
             headerStyle: { backgroundColor: colors.background },
             headerTintColor: colors.gold,
             headerTitleStyle: { color: colors.textPrimary, fontWeight: '700' },
