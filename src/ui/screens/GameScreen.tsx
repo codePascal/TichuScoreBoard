@@ -10,6 +10,7 @@ import {
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSQLiteContext } from 'expo-sqlite';
+import { Ionicons } from '@expo/vector-icons';
 import { useGameStore } from '../../store/gameStore';
 import RoundEntryView from '../components/RoundEntryView';
 import RoundHistorySection from '../components/RoundHistorySection';
@@ -31,7 +32,7 @@ export default function GameScreen() {
   const {
     teamAScore, teamBScore, rounds, phase,
     teamAPlayer1Id, teamAPlayer2Id, teamBPlayer1Id, teamBPlayer2Id,
-    getTeamAName, getTeamBName, getWinner, resetGame,
+    getTeamAName, getTeamBName, getWinner, resetGame, undoLastRound,
   } = useGameStore();
 
   const handleSaveAndFinish = async () => {
@@ -58,13 +59,13 @@ export default function GameScreen() {
     router.replace('/(tabs)');
   };
 
-  const confirmAbandon = () => {
+  const confirmAbort = () => {
     Alert.alert(
-      'Abandon Game?',
+      'Abort Game?',
       'Progress will not be saved to the leaderboard.',
       [
-        { text: 'Continue Playing', style: 'cancel' },
-        { text: 'Abandon', style: 'destructive', onPress: handleAbandon },
+        { text: 'Keep Playing', style: 'cancel' },
+        { text: 'Abort', style: 'destructive', onPress: handleAbandon },
       ]
     );
   };
@@ -72,11 +73,28 @@ export default function GameScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={confirmAbandon} style={styles.abandonBtn}>
-          <Text style={styles.abandonText}>✕ Abandon</Text>
+        <TouchableOpacity
+          onPress={undoLastRound}
+          style={styles.headerBtn}
+          disabled={rounds.length === 0}
+          activeOpacity={0.7}
+        >
+          <Ionicons
+            name="arrow-undo"
+            size={20}
+            color={rounds.length === 0 ? colors.textMuted : colors.textSecondary}
+          />
+          <Text style={[styles.headerBtnLabel, rounds.length === 0 && styles.headerBtnLabelDim]}>
+            Undo
+          </Text>
         </TouchableOpacity>
+
         <Text style={styles.roundLabel}>Round {rounds.length + 1}</Text>
-        <View style={{ width: 80 }} />
+
+        <TouchableOpacity onPress={confirmAbort} style={styles.headerBtn} activeOpacity={0.7}>
+          <Ionicons name="close-circle-outline" size={20} color={colors.danger} />
+          <Text style={styles.abortLabel}>Abort</Text>
+        </TouchableOpacity>
       </View>
 
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
@@ -132,8 +150,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.divider,
   },
-  abandonBtn: { width: 80 },
-  abandonText: { fontSize: 14, color: colors.danger, fontWeight: '600' },
+  headerBtn: { width: 64, alignItems: 'center', gap: 3 },
+  headerBtnLabel: { fontSize: 11, fontWeight: '600', color: colors.textSecondary },
+  headerBtnLabelDim: { color: colors.textMuted },
+  abortLabel: { fontSize: 11, fontWeight: '600', color: colors.danger },
   roundLabel: { fontSize: 15, fontWeight: '700', color: colors.gold, letterSpacing: 1 },
   scroll: { flex: 1 },
   content: { padding: 16, gap: 14, paddingBottom: 40 },

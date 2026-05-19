@@ -37,3 +37,14 @@ export const EarlyGame: Story = {
     }),
   ],
 };
+
+export const FirstRound: Story = {
+  decorators: [
+    withStoreState({
+      ...MID_GAME_STATE,
+      teamAScore: 0,
+      teamBScore: 0,
+      rounds: [],
+    }),
+  ],
+};

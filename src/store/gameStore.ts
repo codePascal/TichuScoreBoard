@@ -56,6 +56,9 @@ interface GameStore {
   // Build and let user confirm round.
   confirmRound: () => void;
 
+  // Remove the last completed round and revert scores to their previous values.
+  undoLastRound: () => void;
+
   // Reset game to setup phase.
   resetGame: () => void;
 
@@ -177,6 +180,19 @@ export const useGameStore = create<GameStore>((set, get) => ({
     } else {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     }
+  },
+
+  undoLastRound: () => {
+    const s = get();
+    if (s.rounds.length === 0) return;
+    const last = s.rounds[s.rounds.length - 1];
+    set({
+      rounds: s.rounds.slice(0, -1),
+      teamAScore: s.teamAScore - computeRoundTeamTotal(last, 'A'),
+      teamBScore: s.teamBScore - computeRoundTeamTotal(last, 'B'),
+      phase: 'playing',
+    });
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   },
 
   resetGame: () =>
