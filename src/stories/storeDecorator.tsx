@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Decorator } from '@storybook/react';
-import { useGameStore } from '../store/gameStore';
+import { useGameStore, STORE_INITIAL_STATE } from '../store/gameStore';
 import { ANNA, BOB, CAROL, DAVE, ROUNDS_SHORT, ROUNDS_WITH_DOUBLE } from './fixtures';
 
 // ---------------------------------------------------------------------------
@@ -54,7 +54,9 @@ export const NEAR_FINISH_STATE = {
  */
 export function withStoreState(state: Parameters<typeof useGameStore.setState>[0]): Decorator {
   return (Story) => {
-    useGameStore.setState(state); // merge: preserves store functions, overwrites all data fields
+    // Full replace: STORE_INITIAL_STATE carries all function references, story
+    // data fields override the defaults. This survives HMR and fresh module loads.
+    useGameStore.setState({ ...STORE_INITIAL_STATE, ...state }, true);
     return <Story />;
   };
 }

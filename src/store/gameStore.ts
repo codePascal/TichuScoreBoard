@@ -240,3 +240,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
     );
   },
 }));
+
+/**
+ * Full initial store state captured once at module load — includes all action
+ * functions and derived helpers. Used by Storybook decorators to guarantee a
+ * clean reset that never loses function references.
+ */
+export const STORE_INITIAL_STATE = useGameStore.getState();
