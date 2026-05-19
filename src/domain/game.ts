@@ -33,7 +33,6 @@ export function buildRound(
 /**
  * Checks if any team has reached the 1000-point win threshold.
  *
- * @remarks
  * Game is over if one or both teams have reached the win threshold. In case both teams have equal
  * points, the game advances until one team has more points.
  *
@@ -49,7 +48,6 @@ export function isGameOver(teamAScore: number, teamBScore: number): boolean {
 /**
  * Evaluates the winning team.
  *
- * @remarks
  * It is assumed that a team has more points than the other one. Otherwise the game should not have
  * been declared over.
  *
@@ -65,7 +63,6 @@ export function winningTeam(teamAScore: number, teamBScore: number): Team {
 /**
  * Aggregates stats of player across all rounds of a game.
  *
- * @remarks
  * Counts number of Tichu and grand Tichu calls and successes.
  *
  * @param playerId The unique database ID of the player.

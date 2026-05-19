@@ -11,6 +11,15 @@ import { useGameStore } from '../../store/gameStore';
 import { colors, radius, shared } from '../theme';
 import type { Team } from '../../types';
 
+/**
+ * Form for entering the result of the current round.
+ *
+ * Renders Tichu call buttons for all four players, an optional card-points
+ * slider, a double-victory toggle, a live points preview, and a confirm button.
+ * All state is read from and written to the Zustand game store.
+ *
+ * @returns The rendered round-entry card.
+ */
 export default function RoundEntryView() {
   const store = useGameStore();
   const {
@@ -130,6 +139,7 @@ export default function RoundEntryView() {
 
 type PlayerSlot = { id: number; name: string };
 
+/** Renders Tichu call buttons for both players in one team column. */
 function PlayerTichuColumn({ label, color, p1, p2, team }: {
   label: string; color: string; p1: PlayerSlot; p2: PlayerSlot; team: Team;
 }) {
@@ -143,6 +153,7 @@ function PlayerTichuColumn({ label, color, p1, p2, team }: {
   );
 }
 
+/** Renders Tichu / Grand-Tichu call-and-result buttons for a single player. */
 function PlayerTichuRow({ player, team }: { player: PlayerSlot; team: Team }) {
   const { getTichuEvent, setTichu } = useGameStore();
   const ev = getTichuEvent(player.id);

@@ -30,7 +30,6 @@ export interface CompletedRound {
  * @param grandTichuCalls Number of grand tichu calls.
  * @param grandTichuWins  Number of successful grand Tichu calls.
  * @param totalScore      Sum of the player's team score across all saved games.
- *
  */
 export interface Player {
   id: number;

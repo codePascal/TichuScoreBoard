@@ -17,6 +17,21 @@ interface Props {
   allPlayers: Player[];
 }
 
+/**
+ * Text input with live autocomplete suggestions drawn from a player list.
+ *
+ * Suggestions appear while the field is focused and are filtered by the current
+ * value as a prefix. Tapping a suggestion fills the input and dismisses the
+ * dropdown. Each suggestion shows the player's name and win-rate metadata.
+ *
+ * @param props - Component props.
+ * @param props.label - Placeholder text shown when the field is empty.
+ * @param props.value - Controlled text value.
+ * @param props.onChangeText - Called on every keystroke with the new value.
+ * @param props.allPlayers - Pool of players to derive autocomplete suggestions from.
+ * 
+ * @returns The rendered input with optional suggestion dropdown.
+ */
 export default function PlayerNameField({ label, value, onChangeText, allPlayers }: Props) {
   const [focused, setFocused] = useState(false);
   const inputRef = useRef<TextInput>(null);

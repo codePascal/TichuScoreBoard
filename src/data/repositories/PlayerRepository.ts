@@ -59,7 +59,6 @@ export async function searchPlayersByPrefix(
 /**
  * Returns an existing player by display name, or inserts a new one with zeroed stats.
  *
- * @remarks
  * Matching is case-insensitive and trims whitespace. If two names normalize to the
  * same value (e.g. "Anna" and "anna") they resolve to the same player record.
  *
@@ -91,7 +90,7 @@ export async function findOrCreatePlayer(db: SQLiteDatabase, displayName: string
 /**
  * Writes the result of a finished game to each player's stats record.
  *
- * @description Uses a single transaction so either all four rows are updated or none are.
+ * Uses a single transaction so either all four rows are updated or none are.
  *
  * @param db           The SQLite database.
  * @param teamAPlayers The resolved Player objects for team A.
@@ -120,6 +119,7 @@ export async function saveGameResult(
   });
 }
 
+/** Updates the lifetime stats for one player after a game is saved. */
 async function _updatePlayerStats(
   db: SQLiteDatabase,
   player: Player,
@@ -151,6 +151,7 @@ async function _updatePlayerStats(
   );
 }
 
+/** Maps a raw SQLite result row to a {@link Player} domain object. */
 function _rowToPlayer(row: Record<string, number | string>): Player {
   return {
     id: row.id as number,

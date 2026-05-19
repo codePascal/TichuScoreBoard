@@ -11,6 +11,19 @@ interface Props {
   teamBName: string;
 }
 
+/**
+ * Collapsible list of completed rounds shown in reverse chronological order.
+ *
+ * Each row can be expanded to reveal card-point split, double-victory details,
+ * and individual Tichu events with their point impact.
+ *
+ * @param props - Component props.
+ * @param props.rounds - All completed rounds to display.
+ * @param props.teamAName - Display name of team A (used in expanded detail rows).
+ * @param props.teamBName - Display name of team B (used in expanded detail rows).
+ * 
+ * @returns The rendered round history section.
+ */
 export default function RoundHistorySection({ rounds, teamAName, teamBName }: Props) {
   const [expanded, setExpanded] = useState(true);
 
@@ -43,6 +56,7 @@ export default function RoundHistorySection({ rounds, teamAName, teamBName }: Pr
   );
 }
 
+/** Renders a collapsible row for one completed round; expands to show card-point and Tichu detail. */
 function RoundRow({ round, teamAName, teamBName }: {
   round: CompletedRound;
   teamAName: string;

@@ -14,6 +14,18 @@ interface Props {
   onAbandon: () => void;
 }
 
+/**
+ * Modal overlay shown when a game ends.
+ *
+ * Displays the winner's name, final scores for both teams, and two action
+ * buttons: save the result to the leaderboard, or discard it.
+ *
+ * @param props - Component props.
+ * @param props.onSave - Called when the user confirms saving to the leaderboard.
+ * @param props.onAbandon - Called when the user discards the result.
+ * 
+ * @returns The rendered modal.
+ */
 export default function WinnerModal({ onSave, onAbandon }: Props) {
   const { teamAScore, teamBScore, rounds, getTeamAName, getTeamBName, getWinner } = useGameStore();
   const winner = getWinner();
@@ -47,6 +59,7 @@ export default function WinnerModal({ onSave, onAbandon }: Props) {
   );
 }
 
+/** Renders a score box with team label, final score, and a crown emoji for the winning team. */
 function ScoreBox({ label, score, color, isWinner }: {
   label: string; score: number; color: string; isWinner: boolean;
 }) {

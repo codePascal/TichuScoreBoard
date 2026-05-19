@@ -18,8 +18,13 @@ import { colors, radius, shared } from '../theme';
 import type { Player } from '../../types';
 
 /**
+ * Setup screen for configuring a new game.
  *
- * @returns
+ * Lets users enter player names for both teams, with live autocomplete
+ * suggestions drawn from the player database. Transitions to the game screen
+ * once all four names are filled in and the start button is pressed.
+ *
+ * @returns The rendered setup screen.
  */
 export default function StartScreen() {
   const db = useSQLiteContext();
@@ -125,6 +130,7 @@ export default function StartScreen() {
   );
 }
 
+/** Renders the player-entry card for one team, with two name fields and autocomplete. */
 function TeamSection({
   teamName,
   color,

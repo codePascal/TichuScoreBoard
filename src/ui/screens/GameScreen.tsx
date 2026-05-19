@@ -17,6 +17,15 @@ import WinnerModal from '../components/WinnerModal';
 import { saveGameResult } from '../../data';
 import { colors, radius } from '../theme';
 
+/**
+ * Screen for an active game session.
+ *
+ * Renders live team score cards, the round-entry form, and the round history
+ * list. Shows a {@link WinnerModal} overlay when the game reaches the finished
+ * phase.
+ *
+ * @returns The rendered game screen.
+ */
 export default function GameScreen() {
   const db = useSQLiteContext();
   const {
@@ -97,6 +106,7 @@ export default function GameScreen() {
   );
 }
 
+/** Renders a team score card with name, numeric score, and a progress bar towards 1000. */
 function TeamScoreCard({ name, score, color }: { name: string; score: number; color: string }) {
   const progress = Math.min(score / 1000, 1);
   return (
@@ -104,7 +114,7 @@ function TeamScoreCard({ name, score, color }: { name: string; score: number; co
       <Text style={[styles.scoreCardName, { color }]} numberOfLines={2}>{name}</Text>
       <Text style={[styles.scoreCardNum, score >= 1000 && { color: colors.gold }]}>{score}</Text>
       <View style={styles.progressBg}>
-        <View style={[styles.progressFill, { width: `${progress * 100}%` as any, backgroundColor: color }]} />
+        <View style={[styles.progressFill, { width: `${progress * 100}%` as `${number}%`, backgroundColor: color }]} />
       </View>
       <Text style={styles.scoreCardTarget}>/ 1000</Text>
     </View>

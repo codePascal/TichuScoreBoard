@@ -3,18 +3,23 @@ import type { SQLiteDatabase } from 'expo-sqlite';
 /**
  * Initializes the database at app startup via SQLiteProvider.
  *
- * @param db
+ * Enables WAL mode and creates all required tables if they do not yet exist.
+ *
+ * @param db - The SQLite database instance provided by expo-sqlite.
+ *
+ * @returns A promise that resolves once initialization is complete.
  */
 export async function initDatabase(db: SQLiteDatabase): Promise<void> {
   await _enableWal(db);
   await _createTables(db);
 }
 
+/** Enables WAL (Write-Ahead Logging) mode for better read/write concurrency. */
 async function _enableWal(db: SQLiteDatabase): Promise<void> {
-  // Enables WAL (Write-Ahead Logging) mode for better read/write concurrency.
   await db.execAsync('PRAGMA journal_mode = WAL;');
 }
 
+/** Creates all application tables if they do not already exist. */
 async function _createTables(db: SQLiteDatabase): Promise<void> {
   await db.execAsync(`
     CREATE TABLE IF NOT EXISTS players (

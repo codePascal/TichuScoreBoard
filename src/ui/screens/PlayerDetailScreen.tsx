@@ -14,6 +14,14 @@ import { playerWinRate, playerTichuRate, playerGrandTichuRate, playerAvgScore } 
 import { colors, radius, shared } from '../theme';
 import type { Player } from '../../types';
 
+/**
+ * Screen showing lifetime stats and round history for a single player.
+ *
+ * Reads the player `id` from the route via {@link useLocalSearchParams} and
+ * loads the matching record from the SQLite database on mount.
+ *
+ * @returns The rendered player detail screen.
+ */
 export default function PlayerDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const db = useSQLiteContext();
@@ -72,6 +80,7 @@ export default function PlayerDetailScreen() {
   );
 }
 
+/** Renders a single stat value with a short label underneath. */
 function Tile({ value, label }: { value: string; label: string }) {
   return (
     <View style={styles.tile}>
@@ -81,6 +90,7 @@ function Tile({ value, label }: { value: string; label: string }) {
   );
 }
 
+/** Renders a titled card wrapping one or more {@link StatRow} elements. */
 function StatCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <View style={styles.statCard}>
@@ -93,6 +103,7 @@ function StatCard({ title, children }: { title: string; children: React.ReactNod
   );
 }
 
+/** Renders a single labeled stat row; highlights the value in gold when `highlight` is true. */
 function StatRow({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
   return (
     <View style={styles.statRow}>

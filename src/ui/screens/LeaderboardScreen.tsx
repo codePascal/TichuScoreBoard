@@ -14,13 +14,17 @@ import { useSQLiteContext } from 'expo-sqlite';
 import { Ionicons } from '@expo/vector-icons';
 import { getAllPlayers } from '../../data';
 import { playerWinRate, playerTichuRate, playerGrandTichuRate, playerAvgScore } from '../../domain';
-import { colors, radius, shared } from '../theme';
+import { colors, radius } from '../theme';
 import type { Player, SortKey } from '../../types';
 
 /**
- * Creates the leaderboard screen.
- * 
- * The leaderboard displays stats such as played games, won games, etc. in descending order.
+ * Screen that displays all players ranked by a chosen stat.
+ *
+ * Players are sorted by win rate by default; a chip bar lets the user switch to
+ * games played, Tichu rate, grand Tichu rate, or average score. A search field
+ * filters the list by display name.
+ *
+ * @returns The rendered leaderboard screen.
  */
 export default function LeaderboardScreen() {
   const db = useSQLiteContext();

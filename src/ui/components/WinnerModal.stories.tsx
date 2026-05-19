@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { expect, within } from '@storybook/test';
 import WinnerModal from './WinnerModal';
 import { withStoreState, FINISHED_GAME_STATE } from '../../stories/storeDecorator';
 
