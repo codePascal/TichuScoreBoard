@@ -100,7 +100,7 @@ eas build:configure
 
 ### Share with friends
 
-#### Option 1 — Expo Go + tunnel (easiest, no build needed)
+#### Option 1 — Expo Go Tunnel
 
 Ask your friends to install **Expo Go**
 ([App Store](https://apps.apple.com/app/expo-go/id982107779) ·
@@ -115,7 +115,7 @@ They scan the QR code with Expo Go and the app opens on their device. The `--tun
 traffic through Expo's servers, so friends can connect from anywhere — no shared Wi-Fi needed.
 You do need to keep the terminal running while they use it.
 
-#### Option 2 — Android APK (standalone, no Expo Go needed)
+#### Option 2 — Android APK
 
 Build a standalone APK with EAS and share the file directly:
 
@@ -127,7 +127,7 @@ EAS prints a download link when the build finishes. Share the APK file directly 
 messaging app). Recipients install it by opening the file on their Android device
 (Settings → allow installs from unknown sources).
 
-#### Option 3 — iOS via TestFlight (no Expo Go needed)
+#### Option 3 — iOS via TestFlight
 
 Apple does not allow APK-style side-loading. The easiest path is
 [TestFlight](https://testflight.apple.com), which requires a free Apple Developer account:
@@ -157,7 +157,9 @@ eas submit --platform ios
 
 Here are some ways you can contribute to this project:
 
-- You can open an issue if you would like to request a feature or report a bug/error.
-- If you found a bug, please illustrate it with a minimal reprex
+- You can [open an issue](https://github.com/codePascal/TichuScoreBoard/issues) if you would like
+  to request a feature or report a bug/error.
+- If you found a bug, please illustrate it with a minimal
+  [reprex](https://tidyverse.org/help/#reprex)
 - If you want to contribute on a deeper level, it is a good idea to file an issue first. I will
   be happy to discuss other ways of contribution!
