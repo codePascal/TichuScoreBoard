@@ -20,6 +20,22 @@ function makeMockDb(overrides: Partial<SQLiteDatabase> = {}): SQLiteDatabase {
   } as unknown as SQLiteDatabase;
 }
 
+/**
+ * Mock db for saveGameResult tests: getFirstAsync resolves to the row for the
+ * requested player id, matching how saveGameResult now fetches players internally.
+ */
+function makeMockDbForSave(players: Player[]): SQLiteDatabase {
+  const rowById = new Map(players.map(p => [
+    p.id,
+    makeRow({ id: p.id, display_name: p.displayName, normalized_name: p.normalizedName }),
+  ]));
+  return makeMockDb({
+    getFirstAsync: jest.fn().mockImplementation((_sql: string, [id]: unknown[]) =>
+      Promise.resolve(rowById.get(id as number) ?? null)
+    ),
+  });
+}
+
 function makeRow(overrides: Record<string, number | string> = {}): Record<string, number | string> {
   return {
     id: 1,
@@ -284,20 +300,20 @@ describe('saveGameResult', () => {
   const dave = makePlayer({ id: 4, displayName: 'Dave' });
 
   it('wraps all writes in a single transaction', async () => {
-    const db = makeMockDb();
-    await saveGameResult(db, [anna, bob], [carol, dave], 1050, 800, 'A', NO_ROUNDS);
+    const db = makeMockDbForSave([anna, bob, carol, dave]);
+    await saveGameResult(db, [anna.id, bob.id], [carol.id, dave.id], 1050, 800, 'A', NO_ROUNDS);
     expect(db.withTransactionAsync).toHaveBeenCalledTimes(1);
   });
 
   it('writes one UPDATE per player — four total', async () => {
-    const db = makeMockDb();
-    await saveGameResult(db, [anna, bob], [carol, dave], 1050, 800, 'A', NO_ROUNDS);
+    const db = makeMockDbForSave([anna, bob, carol, dave]);
+    await saveGameResult(db, [anna.id, bob.id], [carol.id, dave.id], 1050, 800, 'A', NO_ROUNDS);
     expect(db.runAsync).toHaveBeenCalledTimes(4);
   });
 
   it('UPDATE targets the player by id, not by name', async () => {
-    const db = makeMockDb();
-    await saveGameResult(db, [anna, bob], [carol, dave], 1050, 800, 'A', NO_ROUNDS);
+    const db = makeMockDbForSave([anna, bob, carol, dave]);
+    await saveGameResult(db, [anna.id, bob.id], [carol.id, dave.id], 1050, 800, 'A', NO_ROUNDS);
 
     const calls = (db.runAsync as jest.Mock).mock.calls;
     expect(calls[0][0]).toContain('WHERE id = ?'); // SQL uses id
@@ -305,8 +321,8 @@ describe('saveGameResult', () => {
   });
 
   it('passes team A score to team A players', async () => {
-    const db = makeMockDb();
-    await saveGameResult(db, [anna, bob], [carol, dave], 1050, 800, 'A', NO_ROUNDS);
+    const db = makeMockDbForSave([anna, bob, carol, dave]);
+    await saveGameResult(db, [anna.id, bob.id], [carol.id, dave.id], 1050, 800, 'A', NO_ROUNDS);
 
     const calls = (db.runAsync as jest.Mock).mock.calls;
     // params: [won, tichuCalls, tichuWins, grandCalls, grandWins, score, id]
@@ -315,8 +331,8 @@ describe('saveGameResult', () => {
   });
 
   it('marks winning team as won=1 and losing team as won=0', async () => {
-    const db = makeMockDb();
-    await saveGameResult(db, [anna, bob], [carol, dave], 1050, 800, 'A', NO_ROUNDS);
+    const db = makeMockDbForSave([anna, bob, carol, dave]);
+    await saveGameResult(db, [anna.id, bob.id], [carol.id, dave.id], 1050, 800, 'A', NO_ROUNDS);
 
     const calls = (db.runAsync as jest.Mock).mock.calls;
     expect(calls[0][1][0]).toBe(1); // Anna won
@@ -324,8 +340,8 @@ describe('saveGameResult', () => {
   });
 
   it('marks team B players as won when team B wins', async () => {
-    const db = makeMockDb();
-    await saveGameResult(db, [anna, bob], [carol, dave], 800, 1050, 'B', NO_ROUNDS);
+    const db = makeMockDbForSave([anna, bob, carol, dave]);
+    await saveGameResult(db, [anna.id, bob.id], [carol.id, dave.id], 800, 1050, 'B', NO_ROUNDS);
 
     const calls = (db.runAsync as jest.Mock).mock.calls;
     expect(calls[0][1][0]).toBe(0); // Anna lost
@@ -347,8 +363,8 @@ describe('saveGameResult', () => {
       },
     ];
 
-    const db = makeMockDb();
-    await saveGameResult(db, [anna, bob], [carol, dave], 1050, 800, 'A', rounds);
+    const db = makeMockDbForSave([anna, bob, carol, dave]);
+    await saveGameResult(db, [anna.id, bob.id], [carol.id, dave.id], 1050, 800, 'A', rounds);
 
     const annaParams = (db.runAsync as jest.Mock).mock.calls[0][1];
     // params: [won, tichuCalls, tichuWins, grandCalls, grandWins, score, id]

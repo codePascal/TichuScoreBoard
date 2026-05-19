@@ -90,30 +90,42 @@ export async function findOrCreatePlayer(db: SQLiteDatabase, displayName: string
 /**
  * Writes the result of a finished game to each player's stats record.
  *
- * Uses a single transaction so either all four rows are updated or none are.
+ * Resolves each player from the database by ID, then applies stat updates inside
+ * a single transaction so either all four rows are updated or none are.
  *
- * @param db           The SQLite database.
- * @param teamAPlayers The resolved Player objects for team A.
- * @param teamBPlayers The resolved Player objects for team B.
- * @param teamAScore   The final score of team A.
- * @param teamBScore   The final score of team B.
- * @param winner       The winning team.
- * @param rounds       The completed rounds, used to tally tichu stats per player.
+ * @param db             The SQLite database.
+ * @param teamAPlayerIds The database IDs of the two players on team A.
+ * @param teamBPlayerIds The database IDs of the two players on team B.
+ * @param teamAScore     The final score of team A.
+ * @param teamBScore     The final score of team B.
+ * @param winner         The winning team identifier.
+ * @param rounds         The completed rounds, used to tally Tichu stats per player.
  */
 export async function saveGameResult(
   db: SQLiteDatabase,
-  teamAPlayers: [Player, Player],
-  teamBPlayers: [Player, Player],
+  teamAPlayerIds: [number, number],
+  teamBPlayerIds: [number, number],
   teamAScore: number,
   teamBScore: number,
   winner: Team,
   rounds: CompletedRound[]
 ): Promise<void> {
+  const [a1, a2, b1, b2] = await Promise.all([
+    getPlayerById(db, teamAPlayerIds[0]),
+    getPlayerById(db, teamAPlayerIds[1]),
+    getPlayerById(db, teamBPlayerIds[0]),
+    getPlayerById(db, teamBPlayerIds[1]),
+  ]);
+
+  if (!a1 || !a2 || !b1 || !b2) {
+    throw new Error('saveGameResult: one or more player IDs could not be resolved.');
+  }
+
   await db.withTransactionAsync(async () => {
-    for (const player of teamAPlayers) {
+    for (const player of [a1, a2] as const) {
       await _updatePlayerStats(db, player, winner === 'A', teamAScore, rounds);
     }
-    for (const player of teamBPlayers) {
+    for (const player of [b1, b2] as const) {
       await _updatePlayerStats(db, player, winner === 'B', teamBScore, rounds);
     }
   });

@@ -30,7 +30,7 @@ export default function GameScreen() {
   const db = useSQLiteContext();
   const {
     teamAScore, teamBScore, rounds, phase,
-    teamAPlayer1, teamAPlayer2, teamBPlayer1, teamBPlayer2,
+    teamAPlayer1Id, teamAPlayer2Id, teamBPlayer1Id, teamBPlayer2Id,
     getTeamAName, getTeamBName, getWinner, resetGame,
   } = useGameStore();
 
@@ -38,8 +38,8 @@ export default function GameScreen() {
     try {
       await saveGameResult(
         db,
-        [teamAPlayer1, teamAPlayer2],
-        [teamBPlayer1, teamBPlayer2],
+        [teamAPlayer1Id!, teamAPlayer2Id!],
+        [teamBPlayer1Id!, teamBPlayer2Id!],
         teamAScore,
         teamBScore,
         getWinner(),
