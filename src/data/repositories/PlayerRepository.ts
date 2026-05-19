@@ -33,6 +33,30 @@ export async function getPlayerById(db: SQLiteDatabase, id: number): Promise<Pla
 }
 
 /**
+ * Returns all players whose normalized name starts with the given normalized prefix.
+ *
+ * @param db     The SQLite database.
+ * @param prefix The search string, matched case-insensitively from the start of the name.
+ *
+ * @returns Matching players sorted by games played descending (most active first).
+ */
+export async function searchPlayersByPrefix(
+  db: SQLiteDatabase,
+  prefix: string
+): Promise<Player[]> {
+  const normalized = normalizedName(prefix);
+  if (!normalized) return [];
+  const rows = await db.getAllAsync<Record<string, number | string>>(
+    `SELECT * FROM players
+     WHERE normalized_name LIKE ?
+     ORDER BY games_played DESC
+     LIMIT 5`,
+    [`${normalized}%`]
+  );
+  return rows.map(_rowToPlayer);
+}
+
+/**
  * Returns an existing player by display name, or inserts a new one with zeroed stats.
  *
  * @remarks

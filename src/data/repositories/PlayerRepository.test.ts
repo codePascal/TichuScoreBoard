@@ -5,6 +5,7 @@ import {
   getPlayerById,
   findOrCreatePlayer,
   saveGameResult,
+  searchPlayersByPrefix,
 } from './PlayerRepository';
 
 // PlayerRepository test fixtures.
@@ -200,6 +201,78 @@ describe('findOrCreatePlayer', () => {
 
     expect(player.gamesPlayed).toBe(0);
     expect(player.totalScore).toBe(0);
+  });
+});
+
+// searchPlayersByPrefix
+describe('searchPlayersByPrefix', () => {
+  it('returns an empty array when the prefix is empty', async () => {
+    const db = makeMockDb();
+    expect(await searchPlayersByPrefix(db, '')).toEqual([]);
+    expect(db.getAllAsync).not.toHaveBeenCalled();
+  });
+
+  it('returns an empty array when the prefix is whitespace only', async () => {
+    const db = makeMockDb();
+    expect(await searchPlayersByPrefix(db, '   ')).toEqual([]);
+    expect(db.getAllAsync).not.toHaveBeenCalled();
+  });
+
+  it('executes the correct SQL with a LIKE pattern', async () => {
+    const db = makeMockDb();
+    await searchPlayersByPrefix(db, 'An');
+    expect(db.getAllAsync).toHaveBeenCalledWith(
+      expect.stringContaining('LIKE ?'),
+      ['an%']
+    );
+  });
+
+  it('normalizes the prefix — trims and lowercases before the LIKE', async () => {
+    const db = makeMockDb();
+    await searchPlayersByPrefix(db, '  AN  ');
+    const [, params] = (db.getAllAsync as jest.Mock).mock.calls[0];
+    expect(params[0]).toBe('an%');
+  });
+
+  it('returns an empty array when no rows match', async () => {
+    const db = makeMockDb({ getAllAsync: jest.fn().mockResolvedValue([]) });
+    expect(await searchPlayersByPrefix(db, 'xyz')).toEqual([]);
+  });
+
+  it('maps matched rows to Player objects', async () => {
+    const db = makeMockDb({
+      getAllAsync: jest.fn().mockResolvedValue([makeRow()]),
+    });
+    const players = await searchPlayersByPrefix(db, 'An');
+    expect(players).toHaveLength(1);
+    expect(players[0].displayName).toBe('Anna');
+    expect(players[0].normalizedName).toBe('anna');
+  });
+
+  it('maps multiple rows and preserves order returned by the database', async () => {
+    const db = makeMockDb({
+      getAllAsync: jest.fn().mockResolvedValue([
+        makeRow({ id: 2, display_name: 'Andy', normalized_name: 'andy', games_played: 20 }),
+        makeRow({ id: 1, display_name: 'Anna', normalized_name: 'anna', games_played: 10 }),
+      ]),
+    });
+    const players = await searchPlayersByPrefix(db, 'an');
+    expect(players[0].displayName).toBe('Andy');
+    expect(players[1].displayName).toBe('Anna');
+  });
+
+  it('passes LIMIT 5 in the SQL', async () => {
+    const db = makeMockDb();
+    await searchPlayersByPrefix(db, 'a');
+    const [sql] = (db.getAllAsync as jest.Mock).mock.calls[0];
+    expect(sql).toContain('LIMIT 5');
+  });
+
+  it('orders results by games_played DESC in the SQL', async () => {
+    const db = makeMockDb();
+    await searchPlayersByPrefix(db, 'a');
+    const [sql] = (db.getAllAsync as jest.Mock).mock.calls[0];
+    expect(sql).toContain('ORDER BY games_played DESC');
   });
 });
 
